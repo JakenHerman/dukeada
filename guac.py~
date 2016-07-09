@@ -11,7 +11,7 @@ Determine the operating system the program is running on
 def determine_os():
     if platform.system() ==  "Linux":
         #we know the platform is linux, test linux commands
-        linux_dmesg()     
+        ubuntu_dmesg()     
     elif platform.system() == "Windows":
         #we know the platform is win, test win commands
         windows_sysinfo()
