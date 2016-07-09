@@ -27,6 +27,7 @@ def linux_dmesg():
     if(dmesg[0]==0):
         if(dmesg[1][:34] == "[    0.000000] Hypervisor detected"):
             score_increment() #add to score, as hypervisor was detected
+            print score
         else:
             pass #no hypervisor detected, may not be vm
     else:
