@@ -24,7 +24,7 @@ def determine_os():
 Run the Ubuntu dmesg command to check for hypervisor
 '''
 def linux_dmesg():
-    dmesg = commands.getstatusoutput("dmesg |grep -i hypervisor")
+    dmesg = commands.getstatusoutput("sudo dmesg |grep -i hypervisor")
     if(dmesg[0]==0):
         if(dmesg[1][:34] == "[    0.000000] Hypervisor detected"):
             score_increment() #add to score, as hypervisor was detected
@@ -37,7 +37,7 @@ def linux_dmesg():
 Run the Linux dmidecode to check system-manufacturer or product name
 '''
 def linux_dmidecode():
-    dmidecode_man = commands.getstatusoutput("dmidecode -s system-manufacturer")
+    dmidecode_man = commands.getstatusoutput("sudo dmidecode -s system-manufacturer")
     if(dmidecode_man[0]==0):
         if(dmidecode_man[1]=="VMware" or dmidecode_man[1]=="Xen"):
             score_increment()
