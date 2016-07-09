@@ -11,7 +11,8 @@ Determine the operating system the program is running on
 def determine_os():
     if platform.system() ==  "Linux":
         #we know the platform is linux, test linux commands
-        linux_dmesg()     
+        linux_dmesg()
+        linux_dmidecode()
     elif platform.system() == "Windows":
         #we know the platform is win, test win commands
         windows_sysinfo()
@@ -27,11 +28,33 @@ def linux_dmesg():
     if(dmesg[0]==0):
         if(dmesg[1][:34] == "[    0.000000] Hypervisor detected"):
             score_increment() #add to score, as hypervisor was detected
-            print score
         else:
             pass #no hypervisor detected, may not be vm
     else:
         pass
+
+'''
+Run the Linux dmidecode to check system-manufacturer or product name
+'''
+def linux_dmidecode():
+    dmidecode_man = commands.getstatusoutput("dmidecode -s system-manufacturer")
+    if(dmidecode_man[0]==0):
+        if(dmidecode_man[1]=="VMware" or dmidecode_man[1]=="Xen"):
+            score_increment()
+        else:
+            pass
+    else:
+        pass
+
+    dmidecode_prod = commands.getstatusoutput("dmidecode -s system-product-name")
+    if(dmidecode_prod[0]==0):
+        if(dmidecode_prod[1]=="KVM" or dmidecode_prod[1]=="VirtualBox"):
+            score_increment()
+        else:
+            pass
+    else:
+        pass
+    
 
 def windows_sysinfo():
     sysinfo = subprocess.Popen(["systeminfo"])
@@ -43,3 +66,4 @@ def score_increment():
     score += 1
 
 determine_os()
+print score
