@@ -3,7 +3,7 @@ import commands
 import os
 import subprocess
 
-score = 0 #if score reaches 3 or higher, we assume virtual
+score = 0
 
 '''
 Determine the operating system the program is running on
@@ -17,7 +17,7 @@ def determine_os():
         windows_sysinfo()
     else:               
         #the platform is something else, abort program
-        quit()
+        mac_testing()
 
 '''
 Run the Ubuntu dmesg command to check for hypervisor
@@ -26,15 +26,19 @@ def linux_dmesg():
     dmesg = commands.getstatusoutput("dmesg |grep -i hypervisor")
     if(dmesg[0]==0):
         if(dmesg[1][:34] == "[    0.000000] Hypervisor detected"):
-            score += 1 #add to score, as hypervisor was detected
+            score_increment() #add to score, as hypervisor was detected
         else:
-            score += 0 #no hypervisor detected, may not be vm
+            pass #no hypervisor detected, may not be vm
     else:
-        score += 0
+        pass
 
 def windows_sysinfo():
     sysinfo = subprocess.Popen(["systeminfo"])
     print sysinfo
     os.system("pause")
+
+def score_increment():
+    global score
+    score += 1
 
 determine_os()
