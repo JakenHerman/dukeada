@@ -18,7 +18,8 @@ def determine_os():
         windows_sysinfo()
     else:               
         #the platform is something else, abort program
-        mac_testing()
+        print "OS not supported. Sorry"
+        quit()
 
 '''
 Run the Ubuntu dmesg command to check for hypervisor
