@@ -56,7 +56,9 @@ def linux_dmidecode():
     else:
         pass
     
-
+'''
+Run the Windows sysinfo command to check hardware naming
+'''
 def windows_sysinfo():
     sysinfo = subprocess.Popen(["systeminfo"])
     print sysinfo
