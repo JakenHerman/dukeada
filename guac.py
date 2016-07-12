@@ -26,14 +26,12 @@ Run the Ubuntu dmesg command to check for hypervisor
 '''
 def linux_dmesg():
     dmesg = commands.getstatusoutput("sudo dmesg |grep -i hypervisor")
-    if(dmesg[0]==0):
+    if(dmesg[0]==0): #0 is the success flag for getstatusoutput, saved in dmesg[0]
         if(dmesg[1][:34] == "[    0.000000] Hypervisor detected"):
             score_increment() #add to score, as hypervisor was detected
-        else:
-            pass #no hypervisor detected, may not be vm
-    else:
-        pass
-
+    
+    #if dmesg[1], the status output was not successful, so we ignore
+    
 '''
 Run the Linux dmidecode to check system-manufacturer or product name
 '''
