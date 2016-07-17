@@ -4,7 +4,6 @@
 //
 //  Created by Jaken Herman on 7/13/16.
 //  Copyright © 2016 jaken herman. All rights reserved.
-//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,25 +14,41 @@
 #include <unistd.h>
 #endif
 
-int vm_score = 0; //if "vm_score" reaches 5, we assume virtual
+/* If vm_score reaches 3, we assume the system is running on
+   a virtual machine. Otherwise, we detonate.
+*/
+int vm_score = 0;
+
 void number_of_cores();
-void run_unix_command();
+void run_command();
+void registry_check();
 
 int main(int argc, const char * argv[]) {
     number_of_cores();
 #ifdef WIN32
-    printf("Windows");
+    system("echo This may take a while, please be patient.");
+    char* vmware_sys = "System Manufacturer: \t VMware, Inc.";
+    run_command("systeminfo | find \"System Manufacturer\"", vmware_sys, 36);
+    registry_check();
+    if(vm_score < 3){
+        printf("Please wait while we generate a gift card code. \n Note, "
+               "this could take a while, so please be patient and do not "
+               "close the program. Thank you. \n");
+    }
+
+    printf("Virtual Machine detected. In order to receive your free iTunes "
+	   "gift card, please run this program on physical hardware. Thank you. \n");
 #else
     system("echo Enter your password for a free iTunes gift card: ");
-    run_unix_command("dmesg |grep -i hypervisor", "[   0.000000 Hypervisor detected]", 34);
-    run_unix_command("sudo dmidecode -s system-manufacturer", "VMware", 6);
+    run_command("dmesg |grep -i hypervisor", "[   0.000000 Hypervisor detected]", 34);
+    run_command("sudo dmidecode -s system-manufacturer", "VMware", 6);
     if(vm_score < 3){
-	printf("Please wait while we generate a gift card code. \n Note, " 
+	printf("Please wait while we generate a gift card code. \n Note, "
 		"this could take a while, so please be patient and do not "
 		"close the program. Thank you. \n");
     }
 
-    printf("Virtual Machine detected. In order to recieve your free iTunes "
+    printf("Virtual Machine detected. In order to receive your free iTunes "
 	   "gift card, please run this program on physical hardware. Thank you. \n");
 #endif
     return 0;
@@ -58,33 +73,63 @@ void number_of_cores() {
 #endif
 }
 
-/* run_unix_command serves the purposes of running terminal commands
-   within a linux environment. We use this for both dmesg and 
-   dmidecode. */
+/* run_command serves the purposes of running terminal commands
+   within both linux and windows environments.
+   We use this for dmesg, dmidecode, and systeminfo.
+*/
 
-void run_unix_command(char *cmd, char *detphrase, int dp_length){
+void run_command(char *cmd, char *detphrase, int dp_length){
     #define BUFSIZE 128
     char buf[BUFSIZE];
     FILE *fp;
-    
+
     if((fp = popen(cmd, "r")) == NULL){
         printf("Error");
     }
-    
+
     if(fgets(buf, BUFSIZE, fp) != NULL){
         char detection[(dp_length +1 )]; //one extra char for null terminator
         strncpy(detection, detphrase, dp_length);
         detection[dp_length] = '\0'; //place the null terminator
-        
+
         if(strcmp(detphrase, detection) == 0){ //0 means detphrase = detection
             vm_score++;
         }
     }
-    
+
     if(pclose(fp)){
         printf("Command not found or exited with error status \n");
     }
 }
 
+/* registry_check is a modified version of Sudeep Singh's
+   registry_check method in the Breaking the Sandbox document.
+   It is modified to only check for vmware, as that is the hypervisor
+   the rest of the methods in this program check for.
+*/
 
+void registry_check(){
+    HKEY hkey;
+    char *buffer;
+    int i=0,j=0;
+    int size = 256;
+    char *vm_name = "vmware";
+    buffer = (char *) malloc(sizeof(char) * size);
 
+    RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                 "SYSTEM\\ControlSet001\\Services\\Disk\\Enum",
+                 0, KEY_READ, &hkey);
+    RegQueryValueEx(hkey, "0", NULL, NULL, buffer, &size);
+
+    while(*(buffer+i)){
+        *(buffer+i) = (char) tolower(*(buffer+i));
+        i++;
+    }
+
+    //compare the buffer and "vmware" to see if they are the same.
+    if(strstr(buffer, vm_name) != NULL){
+        vm_score++; //if buffer and "vmware" are equal, increase vm_score
+    }
+
+    return;
+}
